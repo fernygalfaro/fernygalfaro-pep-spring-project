@@ -6,6 +6,7 @@ import com.example.entity.Message;
 import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MessageService {
@@ -28,6 +29,7 @@ public class MessageService {
     }
     public Message getMessageById(Integer id){
         return messageRepository.findById(id).orElse(null);
+        
     }
     
     public int updateMessageText (Integer id, String newText){

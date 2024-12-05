@@ -71,19 +71,16 @@ public class SocialMediaController {
     @GetMapping("/messages/{messageId}")
     public ResponseEntity<Message> getMessageById(@PathVariable Integer id){
       Message message = messageService.getMessageById(id);
-      if(message == null){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      if(message != null){
+       return ResponseEntity.ok(message);
       }
-      return ResponseEntity.ok(message);
+      return ResponseEntity.ok().build();
     }
     @PatchMapping("/messages/{messageId}")
     public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody String newText){
-        if (newText == null){
-            return ResponseEntity.badRequest().body(null);
-
-        }
+     
         if (newText.trim().isEmpty()){
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 
         }
         if (newText.length() > 255){
