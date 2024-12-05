@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
@@ -71,25 +72,36 @@ public class SocialMediaController {
     public ResponseEntity<Message> getMessageById(@PathVariable Integer id){
       Message message = messageService.getMessageById(id);
       if(message == null){
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
       }
       return ResponseEntity.ok(message);
     }
     @PatchMapping("/messages/{messageId}")
     public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody String newText){
+        if (newText == null){
+            return ResponseEntity.badRequest().body(null);
+
+        }
+        if (newText.trim().isEmpty()){
+            return ResponseEntity.badRequest().body(null);
+
+        }
+        if (newText.length() > 255){
+            return ResponseEntity.badRequest().body(null);
+
+        }
+
         try {
-            if(newText.isBlank() || newText.length() > 255){
-                return ResponseEntity.badRequest().body(null);
-            }
+          
             int rowsUpdated = messageService.updateMessageText(messageId, newText);
-            if(rowsUpdated == 1){
-                return ResponseEntity.ok(rowsUpdated);
-            }else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            if(rowsUpdated == 0){
+                return ResponseEntity.badRequest().body(null);
+            
             }
+            return ResponseEntity.ok(rowsUpdated);
         }
         catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(null);
         }
     } 
     @GetMapping("/accounts/{accountId}/messages")
