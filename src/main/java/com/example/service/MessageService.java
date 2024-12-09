@@ -32,18 +32,19 @@ public class MessageService {
         
     }
     
-    public int updateMessageText (Integer id, String newText){
+    public int updateMessageText(Integer id, String newText) {
         Message message = messageRepository.findById(id).orElse(null);
-        if (message == null){
+        if (message == null) {
             return 0;
         }
-        if(newText == null || newText.trim().isEmpty() || newText.length() > 255){
+        if (newText == null || newText.isBlank() || newText.length() > 255) {
             throw new IllegalArgumentException("Invalid");
         }
         message.setMessageText(newText);
         messageRepository.save(message);
         return 1;
     }
+    
     public List<Message> getMessagesByUserId(Integer userId){
         return messageRepository.findByPostedBy(userId);
     }

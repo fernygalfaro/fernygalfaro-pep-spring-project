@@ -69,36 +69,30 @@ public class SocialMediaController {
         return messageService.getAllMessages();
     }
     @GetMapping("/messages/{messageId}")
-    public ResponseEntity<Message> getMessageById(@PathVariable Integer id){
-      Message message = messageService.getMessageById(id);
+    public ResponseEntity<Message> getMessageById(@PathVariable("messageId") Integer messageId){
+      Message message = messageService.getMessageById(messageId);
       if(message != null){
        return ResponseEntity.ok(message);
       }
       return ResponseEntity.ok().build();
     }
     @PatchMapping("/messages/{messageId}")
-    public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody String newText){
-     
-        if (newText.trim().isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-
+    public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody String newText) {
+        
+        if (newText == null || newText.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
         }
-        if (newText.length() > 255){
-            return ResponseEntity.badRequest().body(null);
-
+        if (newText.length() > 255) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);  
         }
-
         try {
-          
             int rowsUpdated = messageService.updateMessageText(messageId, newText);
-            if(rowsUpdated == 0){
-                return ResponseEntity.badRequest().body(null);
-            
-            }
-            return ResponseEntity.ok(rowsUpdated);
-        }
-        catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(null);
+            if (rowsUpdated == 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);  
+            }    
+            return ResponseEntity.ok(rowsUpdated);  
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);  
         }
     } 
     @GetMapping("/accounts/{accountId}/messages")
